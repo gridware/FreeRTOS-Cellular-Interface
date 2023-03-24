@@ -42,6 +42,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "cellular_config.h"
+#include "cellular_config_defaults.h"
+
 /**
  * @ingroup cellular_datatypes_paramstructs
  * @brief Invalid signal value.
