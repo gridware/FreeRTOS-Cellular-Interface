@@ -140,7 +140,7 @@ static void _saveData( char * pLine,
 
     ( void ) dataLen;
 
-    LogDebug( ( "_saveData : Save data %p with length %ld", pLine, dataLen ) );
+    LogTrace( ( "_saveData : Save data %p with length %ld", pLine, dataLen ) );
 
 #if ( CELLULAR_CONFIG_NO_DYNAMIC_ALLOCATION == 1 )
     pNew = &sATCommandLinePool[sATCommandPoolIndex];
@@ -177,7 +177,7 @@ static void _saveRawData( char * pLine,
                           CellularATCommandResponse_t * pResp,
                           uint32_t dataLen )
 {
-    LogDebug( ( "Save [%p] %ld data to pResp", pLine, dataLen ) );
+    LogTrace( ( "Save [%p] %ld data to pResp", pLine, dataLen ) );
     _saveData( pLine, pResp, dataLen );
 }
 
@@ -186,7 +186,7 @@ static void _saveRawData( char * pLine,
 static void _saveATData( char * pLine,
                          CellularATCommandResponse_t * pResp )
 {
-    LogDebug( ( "Save [%s] %u AT data to pResp", pLine, strlen( pLine ) ) );
+    LogTrace( ( "Save [%s] %u AT data to pResp", pLine, strlen( pLine ) ) );
     _saveData( pLine, pResp, ( uint32_t ) ( strlen( pLine ) + 1U ) );
 }
 
@@ -360,7 +360,7 @@ static CellularPktStatus_t _Cellular_ProcessLine( CellularContext_t * pContext,
         {
             pResp->status = true;
             pkStatus = CELLULAR_PKT_STATUS_OK;
-            LogDebug( ( "Final AT response is SUCCESS [%s] in extra table", pLine ) );
+            LogTrace( ( "Final AT response is SUCCESS [%s] in extra table", pLine ) );
         }
         else
         {
@@ -371,7 +371,7 @@ static CellularPktStatus_t _Cellular_ProcessLine( CellularContext_t * pContext,
             {
                 pResp->status = true;
                 pkStatus = CELLULAR_PKT_STATUS_OK;
-                LogDebug( ( "Final AT response is SUCCESS [%s]", pLine ) );
+                LogTrace( ( "Final AT response is SUCCESS [%s]", pLine ) );
             }
         }
 
@@ -615,7 +615,7 @@ static char * _Cellular_ReadLine( CellularContext_t * pContext,
             /* Add a NULL after the bytesRead. This is required for further processing. */
             pRead[ bytesRead ] = '\0';
 
-            LogDebug( ( "AT Read %ld bytes, data[%p]", bytesRead, pRead ) );
+            LogTrace( ( "AT Read %ld bytes, data[%p]", bytesRead, pRead ) );
             /* Set the pBytesRead only when actual bytes read from comm interface. */
             *pBytesRead = bytesRead + partialDataRead;
 
@@ -668,7 +668,7 @@ static CellularPktStatus_t _handleData( char * pStartOfData,
         /* There are more bytes after the data. */
         *pBytesLeft = ( bytesDataAndLeft - pContext->dataLength );
 
-        LogDebug( ( "_handleData : read buffer buffer %p start %p prefix %ld left %ld, read total %ld",
+        LogTrace( ( "_handleData : read buffer buffer %p start %p prefix %ld left %ld, read total %ld",
                     pContext->pktioReadBuf,
                     pStartOfData,
                     bytesBeforeData,
@@ -713,7 +713,7 @@ static CellularPktStatus_t _handleMsgType( CellularContext_t * pContext,
         if( *ppAtResp == NULL )
         {
             *ppAtResp = _Cellular_AtResponseNew();
-            LogDebug( ( "Allocate at response %p", ( void * ) *ppAtResp ) );
+            LogTrace( ( "Allocate at response %p", ( void * ) *ppAtResp ) );
         }
 
         LogDebug( ( "AT solicited Resp[%s]", pLine ) );
@@ -944,13 +944,13 @@ static bool _handleDataResult( CellularContext_t * pContext,
     /* pktStatus will never be CELLULAR_PKT_STATUS_PENDING_BUFFER from _handleData(). */
     if( bytesLeft == 0U )
     {
-        LogDebug( ( "Complete Data received" ) );
+        LogTrace( ( "Complete Data received" ) );
         keepProcess = false;
     }
     else
     {
         *pBytesRead = bytesLeft;
-        LogDebug( ( "_handleData okay, keep processing %lu bytes %p", bytesLeft, *ppLine ) );
+        LogTrace( ( "_handleData okay, keep processing %lu bytes %p", bytesLeft, *ppLine ) );
     }
 
     return keepProcess;
@@ -975,7 +975,7 @@ static bool _getNextLine( CellularContext_t * pContext,
     if( ( pktStatus == CELLULAR_PKT_STATUS_OK ) && ( pContext->recvdMsgType == AT_SOLICITED ) )
     {
         /* Garbage collection. */
-        LogDebug( ( "Garbage collection" ) );
+        LogTrace( ( "Garbage collection" ) );
         ( void ) memmove( pContext->pktioReadBuf, *ppLine, *pBytesRead );
         *ppLine = pContext->pktioReadBuf;
         pContext->pPktioReadPtr = pContext->pktioReadBuf;
@@ -1355,7 +1355,7 @@ uint32_t _Cellular_PktioSendData( CellularContext_t * pContext,
                                             dataLen, CELLULAR_COMM_IF_SEND_TIMEOUT_MS, &sentLen );
     }
 
-    LogDebug( ( "PktioSendData sent %ld bytes", sentLen ) );
+    LogTrace( ( "PktioSendData sent %ld bytes", sentLen ) );
     return sentLen;
 }
 
