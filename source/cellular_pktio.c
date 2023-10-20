@@ -1367,6 +1367,7 @@ void _Cellular_PktioShutdown( CellularContext_t * pContext )
 
     if( ( pContext != NULL ) && ( pContext->bPktioUp ) )
     {
+        initComplete = false;
         if( pContext->pPktioCommEvent != NULL )
         {
             ( void ) PlatformEventGroup_SetBits( ( PlatformEventGroupHandle_t ) pContext->pPktioCommEvent, ( EventBits_t ) PKTIO_EVT_MASK_ABORT );
@@ -1390,7 +1391,7 @@ void _Cellular_PktioShutdown( CellularContext_t * pContext )
 /*-----------------------------------------------------------*/
 
 void PktIO_ReadThread() {
-  if (initComplete) {
-    _pktioReadThread(sContext);
-  }
+    if (initComplete) {
+        _pktioReadThread(sContext);
+    }
 }
