@@ -141,22 +141,22 @@ static CellularPktStatus_t _parseRegStatusInRegStatusParsing( CellularContext_t 
 
         if( regStatus == REGISTRATION_STATUS_REGISTERED_HOME )
         {
-            LogDebug( ( "Netowrk registration : HOME" ) );
+            LogDebug( ( "Network registration : HOME" ) );
         }
         else if( regStatus == REGISTRATION_STATUS_ROAMING_REGISTERED )
         {
-            LogDebug( ( "Netowrk registration : ROAMING" ) );
+            LogDebug( ( "Network registration : ROAMING" ) );
         }
         else if( regStatus == REGISTRATION_STATUS_REGISTRATION_DENIED )
         {
             /* clear the atlib data if the registration failed. */
-            LogDebug( ( "Netowrk registration : DEINED" ) );
+            LogDebug( ( "Network registration : DENIED" ) );
             _Cellular_InitAtData( pContext, 1 );
         }
         else
         {
             /* clear the atlib data if the registration failed. */
-            LogDebug( ( "Netowrk registration : OTHERS" ) );
+            LogDebug( ( "Network registration : OTHERS" ) );
             _Cellular_InitAtData( pContext, 1 );
         }
     }
