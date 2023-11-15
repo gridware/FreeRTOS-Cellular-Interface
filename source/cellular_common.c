@@ -36,7 +36,7 @@
 #include "cellular_config_defaults.h"
 
 /* Standard includes. */
-#include <stdio.h>
+#include <printf.h>
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
