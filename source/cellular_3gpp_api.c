@@ -30,7 +30,7 @@
  */
 
 /* Standard includes. */
-#include <stdio.h>
+#include <printf.h>
 #include <string.h>
 #include <stdlib.h>
 

@@ -38,7 +38,7 @@
 #include "cellular_config_defaults.h"
 
 /* Standard includes. */
-#include <stdio.h>
+#include <printf.h>
 #include <string.h>
 
 #include "cellular_platform.h"
