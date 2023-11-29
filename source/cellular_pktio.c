@@ -544,7 +544,7 @@ static char * _handleLeftoverBuffer( CellularContext_t * pContext )
     /* Move the leftover data or AT command response to the start of buffer.
      * Set the pRead pointer to the empty buffer space. */
 
-    LogDebug( ( "moved the partial line/data from %p to %p %ld",
+    LogTrace( ( "moved the partial line/data from %p to %p %ld",
                 pContext->pPktioReadPtr, pContext->pktioReadBuf, pContext->partialDataRcvdLen ) );
 
     ( void ) memmove( pContext->pktioReadBuf, pContext->pPktioReadPtr, pContext->partialDataRcvdLen );
@@ -716,7 +716,7 @@ static CellularPktStatus_t _handleMsgType( CellularContext_t * pContext,
             LogTrace( ( "Allocate at response %p", ( void * ) *ppAtResp ) );
         }
 
-        LogDebug( ( "AT solicited Resp[%s]", pLine ) );
+        LogDebug( ( "<< %s", pLine ) );
 
         /* Process Line will store the Line data in AT response. */
         pkStatus = _Cellular_ProcessLine( pContext, pLine, *ppAtResp, pContext->PktioAtCmdType, pContext->pRespPrefix );
@@ -826,7 +826,7 @@ static bool _findLineInStream( CellularContext_t * pContext,
     }
     else
     {
-        LogDebug( ( "%p is not a complete line", pTempLine ) );
+        LogTrace( ( "%p is not a complete line", pTempLine ) );
         pContext->pPktioReadPtr = pTempLine;
         pContext->partialDataRcvdLen = bytesRead;
         keepProcess = false;
@@ -906,7 +906,7 @@ static bool _preprocessLine( CellularContext_t * pContext,
             else if( pktStatus == CELLULAR_PKT_STATUS_SIZE_MISMATCH )
             {
                 /* The modem driver is waiting for more data to decide. */
-                LogDebug( ( "%p is not a complete line", pTempLine ) );
+                LogTrace( ( "%p is not a complete line", pTempLine ) );
                 pContext->pPktioReadPtr = pTempLine;
                 pContext->partialDataRcvdLen = *pBytesRead;
                 keepProcess = false;

@@ -142,7 +142,7 @@ static CellularPktStatus_t _processUrcPacket( CellularContext_t * pContext,
     }
     else
     {
-        LogDebug( ( "Next URC token to parse [%s]", pInputLine ) );
+        LogDebug( ( "[URC] << %s", pInputLine ) );
 
         /* Check if prefix exist in the input string. The pInputLine is checked in Cellular_ATStrDup. */
         ( void ) Cellular_ATIsPrefixPresent( pInputLine, &inputWithPrefix );
@@ -215,7 +215,7 @@ static CellularPktStatus_t _Cellular_AtcmdRequestTimeoutWithCallbackRaw( Cellula
     }
     else
     {
-        LogDebug( ( ">>>>>Start sending [%s]<<<<<", atReq.pAtCmd ) );
+        LogDebug( ( ">> %s", atReq.pAtCmd ) );
 
         /* Fill in request info structure. */
         PlatformMutex_Lock( &pContext->PktRespMutex );
@@ -284,7 +284,7 @@ static CellularPktStatus_t _Cellular_DataSendWithTimeoutDelayRaw( CellularContex
     }
     else
     {
-        LogDebug( ( ">>>>>Start sending Data <<<<<" ) );
+        LogTrace( ( ">>>>>Start sending Data <<<<<" ) );
 
         /* Send the packet. Data send is regarded as CELLULAR_AT_NO_RESULT. Only
          * success or error token is expected in the result. */
@@ -344,7 +344,6 @@ static CellularPktStatus_t _Cellular_DataSendWithTimeoutDelayRaw( CellularContex
         PlatformMutex_Lock( &pContext->PktRespMutex );
         pContext->PktioAtCmdType = CELLULAR_AT_NO_COMMAND;
         PlatformMutex_Unlock( &pContext->PktRespMutex );
-
         LogDebug( ( "<<<<<Exit sending data ret[%d]>>>>>", pktStatus ) );
     }
 
