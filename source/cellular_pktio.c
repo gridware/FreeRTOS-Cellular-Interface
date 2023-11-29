@@ -1091,6 +1091,12 @@ static uint32_t _handleRxDataEvent( CellularContext_t * pContext,
 }
 
 /*-----------------------------------------------------------*/
+
+#if (CELLULAR_CONFIG_USE_STATIC_THREAD_FOR_READ_THREAD == 1)
+static volatile bool sReaderThreadShouldRun = false;
+static CellularContext_t* sContext;
+#endif
+
 static void _pktioReadThread( void * pUserData )
 {
     CellularContext_t * pContext = ( CellularContext_t * ) pUserData;
@@ -1135,14 +1141,17 @@ static void _pktioReadThread( void * pUserData )
             }
         } while( true );
 
-        ( void ) pContext->pCommIntf->close( pContext->hPktioCommIntf );
-        pContext->hPktioCommIntf = NULL;
-        pContext->pPktioShutdownCB( pContext );
     }
     else
     {
         LogError( ( "Comm port open failed" ) );
     }
+
+    if (pContext->pCommIntf) {
+        ( void ) pContext->pCommIntf->close( pContext->hPktioCommIntf );
+    }
+    pContext->hPktioCommIntf = NULL;
+    sReaderThreadShouldRun = false;
 
     ( void ) PlatformEventGroup_SetBits( ( PlatformEventGroupHandle_t ) pContext->pPktioCommEvent, ( EventBits_t ) PKTIO_EVT_MASK_ABORTED );
 
@@ -1170,11 +1179,6 @@ static void _PktioInitProcessReadThreadStatus( CellularContext_t * pContext )
         pContext->bPktioUp = true;
     }
 }
-
-#if (CELLULAR_CONFIG_USE_STATIC_THREAD_FOR_READ_THREAD == 1)
-static bool initComplete = false;
-static CellularContext_t* sContext;
-#endif
 
 /*-----------------------------------------------------------*/
 
@@ -1218,7 +1222,7 @@ CellularPktStatus_t _Cellular_PktioInit( CellularContext_t * pContext,
         // Instead just mark status as true and set the relevant context pointer
         status = true;
         sContext = pContext;
-        initComplete = true;
+        sReaderThreadShouldRun = true;
 #endif
 
         if( status == true )
@@ -1367,7 +1371,6 @@ void _Cellular_PktioShutdown( CellularContext_t * pContext )
 
     if( ( pContext != NULL ) && ( pContext->bPktioUp ) )
     {
-        initComplete = false;
         if( pContext->pPktioCommEvent != NULL )
         {
             ( void ) PlatformEventGroup_SetBits( ( PlatformEventGroupHandle_t ) pContext->pPktioCommEvent, ( EventBits_t ) PKTIO_EVT_MASK_ABORT );
@@ -1391,7 +1394,7 @@ void _Cellular_PktioShutdown( CellularContext_t * pContext )
 /*-----------------------------------------------------------*/
 
 void PktIO_ReadThread() {
-    if (initComplete) {
+    if (sReaderThreadShouldRun) {
         _pktioReadThread(sContext);
     }
 }
