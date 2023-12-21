@@ -51,6 +51,8 @@
 
 #define CELLULAR_CEDRXS_POS_ACT             ( 0U )
 #define CELLULAR_CEDRXS_POS_VALUE           ( 1U )
+#define CELLULAR_CEDRXS_POS_NW_VALUE        ( 2U )
+#define CELLULAR_CEDRXS_POS_PTW             ( 3U )
 #define CELLULAR_CEDRXS_MAX_ENTRY           ( 4U )
 
 #define CELLULAR_AT_CMD_TYPICAL_MAX_SIZE    ( 32U )
@@ -1284,6 +1286,42 @@ static CellularATError_t parseEidrxToken( char * pToken,
             }
 
             break;
+        case CELLULAR_CEDRXS_POS_NW_VALUE:
+            atCoreStatus = Cellular_ATStrtoi( pToken, 2, &tempValue );
+
+            if( atCoreStatus == CELLULAR_AT_SUCCESS )
+            {
+                if( ( tempValue >= 0 ) &&
+                    ( tempValue <= ( int32_t ) UINT8_MAX ) )
+                {
+                    pEidrxSettingsList->eidrxList[ count ].nwProvidedEdrxVaue = ( uint8_t ) tempValue;
+                }
+                else
+                {
+                    LogError( ( "Error in processing Requested Edrx value. Token %s", pToken ) );
+                    atCoreStatus = CELLULAR_AT_ERROR;
+                }
+            }
+
+            break;
+        case CELLULAR_CEDRXS_POS_PTW:
+            atCoreStatus = Cellular_ATStrtoi( pToken, 2, &tempValue );
+
+            if( atCoreStatus == CELLULAR_AT_SUCCESS )
+            {
+                if( ( tempValue >= 0 ) &&
+                    ( tempValue <= ( int32_t ) UINT8_MAX ) )
+                {
+                    pEidrxSettingsList->eidrxList[ count ].pagingTimeWindow = ( uint8_t ) tempValue;
+                }
+                else
+                {
+                    LogError( ( "Error in processing Requested Edrx value. Token %s", pToken ) );
+                    atCoreStatus = CELLULAR_AT_ERROR;
+                }
+            }
+
+            break;
 
         default:
             LogError( ( "Unknown Parameter Position in AT+CEDRXS Response" ) );
@@ -1339,7 +1377,7 @@ static CellularATError_t parseEidrxLine( char * pInputLine,
 
     if( atCoreStatus == CELLULAR_AT_SUCCESS )
     {
-        LogDebug( ( "GetEidrx setting[%d]: RAT: %d, Value: 0x%x",
+        LogTrace( ( "GetEidrx setting[%d]: RAT: %d, Value: 0x%x",
                     count, pEidrxSettingsList->eidrxList[ count ].rat,
                     pEidrxSettingsList->eidrxList[ count ].requestedEdrxVaue ) );
     }
@@ -1389,8 +1427,8 @@ static CellularPktStatus_t _Cellular_RecvFuncGetEidrxSettings( CellularContext_t
         {
             pInputLine = pCommnadItem->pLine;
 
-            if( ( strcmp( "+CEDRXS: 0", pInputLine ) == 0 ) ||
-                ( strcmp( "+CEDRXS:", pInputLine ) == 0 ) )
+            if( ( strcmp( "+CEDRXRDP: 0", pInputLine ) == 0 ) ||
+                ( strcmp( "+CEDRXRDP:", pInputLine ) == 0 ) )
             {
                 LogDebug( ( "GetEidrx: empty EDRXS setting %s", pInputLine ) );
             }
@@ -1630,9 +1668,9 @@ CellularError_t Cellular_CommonGetEidrxSettings( CellularHandle_t cellularHandle
     CellularPktStatus_t pktStatus = CELLULAR_PKT_STATUS_OK;
     CellularAtReq_t atReqGetEidrx = { 0 };
 
-    atReqGetEidrx.pAtCmd = "AT+CEDRXS?";
+    atReqGetEidrx.pAtCmd = "AT+CEDRXRDP";
     atReqGetEidrx.atCmdType = CELLULAR_AT_MULTI_WITH_PREFIX;
-    atReqGetEidrx.pAtRspPrefix = "+CEDRXS";
+    atReqGetEidrx.pAtRspPrefix = "+CEDRXRDP";
     atReqGetEidrx.respCallback = _Cellular_RecvFuncGetEidrxSettings;
     atReqGetEidrx.pData = pEidrxSettingsList;
     atReqGetEidrx.dataLen = CELLULAR_EDRX_LIST_MAX_SIZE;
