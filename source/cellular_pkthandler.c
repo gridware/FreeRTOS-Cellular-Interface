@@ -259,7 +259,9 @@ static CellularPktStatus_t _Cellular_AtcmdRequestTimeoutWithCallbackRaw( Cellula
         pContext->pktRespCB = NULL;
         pContext->pCurrentCmd = NULL;
         PlatformMutex_Unlock( &pContext->PktRespMutex );
-        LogDebug( ( "<<<<<Exit sending [%s] status[%d]<<<<<", atReq.pAtCmd, pktStatus ) );
+        if (pktStatus != CELLULAR_PKT_STATUS_OK) {
+            LogDebug( ( "<<<<<Exit sending [%s] status[%d]<<<<<", atReq.pAtCmd, pktStatus ) );
+        }
     }
 
     return pktStatus;
@@ -344,7 +346,10 @@ static CellularPktStatus_t _Cellular_DataSendWithTimeoutDelayRaw( CellularContex
         PlatformMutex_Lock( &pContext->PktRespMutex );
         pContext->PktioAtCmdType = CELLULAR_AT_NO_COMMAND;
         PlatformMutex_Unlock( &pContext->PktRespMutex );
-        LogDebug( ( "<<<<<Exit sending data ret[%d]>>>>>", pktStatus ) );
+        if (pktStatus != CELLULAR_PKT_STATUS_OK)
+        {
+            LogDebug( ( "<<<<<Exit sending data ret[%d]>>>>>", pktStatus ) );
+        }
     }
 
     return pktStatus;
