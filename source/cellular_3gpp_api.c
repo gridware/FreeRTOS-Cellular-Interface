@@ -1164,7 +1164,7 @@ static CellularPktStatus_t _Cellular_RecvFuncUpdateMccMnc( CellularContext_t * p
             atCoreStatus = _parseCops( pCopsResponse, pOperatorInfo );
         }
 
-        if( atCoreStatus == CELLULAR_AT_ERROR )
+        if( atCoreStatus != CELLULAR_AT_SUCCESS )
         {
             LogError( ( "ERROR: COPS %s", pCopsResponse ) );
             pktStatus = _Cellular_TranslateAtCoreStatus( atCoreStatus );
