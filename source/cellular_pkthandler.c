@@ -177,7 +177,7 @@ static CellularPktStatus_t _processUrcPacket( CellularContext_t * pContext,
         if( pktStatus == CELLULAR_PKT_STATUS_PREFIX_MISMATCH )
         {
             /* No URC callback function available, check for generic callback. */
-            LogDebug( ( "No URC Callback func avail %s, now trying generic URC Callback", pTokenPtr ) );
+            LogTrace( ( "No URC Callback func avail %s, now trying generic URC Callback", pTokenPtr ) );
 
             if( inputWithPrefix == true )
             {
