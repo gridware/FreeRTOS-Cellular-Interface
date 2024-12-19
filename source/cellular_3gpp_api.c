@@ -1980,7 +1980,12 @@ CellularError_t Cellular_CommonGetModemInfo( CellularHandle_t cellularHandle,
     CellularAtReq_t atReqGetModelId = { 0 };
     CellularAtReq_t atReqGetManufactureId = { 0 };
 
+#if GW_HW_REV < 40
+    // hack with this #if but we'll move away from this lib soon enough
+    atReqGetFirmwareVersion.pAtCmd = "AT+QGMR";
+#else
     atReqGetFirmwareVersion.pAtCmd = "AT+CGMR";
+#endif
     atReqGetFirmwareVersion.atCmdType = CELLULAR_AT_WO_PREFIX;
     atReqGetFirmwareVersion.pAtRspPrefix = NULL;
     atReqGetFirmwareVersion.respCallback = _Cellular_RecvFuncGetFirmwareVersion;
