@@ -2634,6 +2634,15 @@ static CellularPktStatus_t _Cellular_RecvFuncGetIccid( CellularContext_t * pCont
 
         if( atCoreStatus == CELLULAR_AT_SUCCESS )
         {
+#if GW_HW_REV > 40
+            // HL7810 returns two comma delimited values for +CCID, we only care about the first
+            // Probably safe for all modems, but better safe...
+            char * comma = strchr(pRespLine, ',');
+            if(comma != NULL)
+            {
+              *comma = '\0';
+            }
+#endif
             /* Storing the ICCID value in the AT Response. */
             if( strlen( pRespLine ) < ( ( size_t ) CELLULAR_ICCID_MAX_SIZE + 1U ) )
             {
@@ -2797,15 +2806,29 @@ CellularError_t Cellular_CommonGetSimCardInfo( CellularHandle_t cellularHandle,
     else
     {
         ( void ) memset( pSimCardInfo, 0, sizeof( CellularSimCardInfo_t ) );
+#if GW_HW_REV > 40
+        // HL7810 needs to wait for SIM card to finish initializing
+        uint8_t retries = 5;
+        while(retries--) {
+          pktStatus = _Cellular_AtcmdRequestWithCallback( pContext, atReqGetImsi );
+          if( pktStatus == CELLULAR_PKT_STATUS_OK ) {
+            break;
+          }
+          Platform_Delay(1000);
+        }
+        (void)atReqGetHplmn;
+#else
         pktStatus = _Cellular_AtcmdRequestWithCallback( pContext, atReqGetImsi );
 
         if( pktStatus == CELLULAR_PKT_STATUS_OK )
         {
+            // Note: This command always fails on HL7810
             pktStatus = _Cellular_AtcmdRequestWithCallback( pContext, atReqGetHplmn );
         }
-
+#endif
         if( pktStatus == CELLULAR_PKT_STATUS_OK )
         {
+            //TODO(Peter) Diagnose why this command randomly fails on HL7810 or add retries
             pktStatus = _Cellular_AtcmdRequestWithCallback( pContext, atReqGetIccid );
         }
 
